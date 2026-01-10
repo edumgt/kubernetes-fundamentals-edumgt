@@ -1,6 +1,3 @@
-## 0630 수업
-
-
 ## docker build . -t myimage
 ## docker run -it -p 80:80 -p 443:443 -e HELLO="hello world!" docker-image-id
 
