@@ -80,3 +80,13 @@ http://<Worker-Node-Public-IP>:31232
 
 ## 추가 설명
 - ReplicaSet은 Pod 수를 유지하지만, 롤링 업데이트/롤백은 Deployment가 담당합니다.
+
+## 트러블슈팅 - ReplicaSet 셀렉터 불일치
+- ReplicaSet이 Pod를 관리하지 못하면 `selector.matchLabels`와 `template.metadata.labels` 일치를 확인합니다.
+```
+# ReplicaSet 셀렉터 확인
+kubectl get rs myapp2-rs -o yaml
+
+# Pod 소유자 확인
+kubectl get pods -o yaml
+```

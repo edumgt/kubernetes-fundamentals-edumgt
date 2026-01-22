@@ -190,6 +190,15 @@ kubectl get pod my-first-pod -o yaml
 kubectl get service my-first-service -o yaml
 ```
 
+## 트러블슈팅 체크리스트
+- **Service 접근 실패 시 포트 매핑 확인**
+  - `port`와 `targetPort`가 불일치한데 `targetPort`를 생략하면 기본적으로 `port`와 동일하게 설정됩니다.
+  - 컨테이너 포트와 다르면 접근이 실패할 수 있으니, Service YAML에서 `targetPort`를 확인합니다.
+```
+kubectl get service my-first-service -o yaml
+kubectl describe pod my-first-pod
+```
+
 ## Step-07: 정리(Clean-Up)
 ```
 # default 네임스페이스의 모든 객체 확인
