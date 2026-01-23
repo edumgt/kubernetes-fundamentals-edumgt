@@ -40,22 +40,6 @@
 
 ## Kubernetes Fundamentals - 단계별 로드맵
 
-### EKS - AWS CLI, kubectl, eksctl 설치
-- **Step-01:** CLI 소개 및 역할 이해
-- **Step-02:** AWS CLI 설치 및 기본 설정
-- **Step-03:** kubectl CLI 설치 및 클러스터 접근 구성
-- **Step-04:** eksctl CLI 설치 및 EKS 관리 준비
-
-### EKS - eksctl로 클러스터 생성
-- **Step-01:** EKS 클러스터 구성 요소 이해
-- **Step-02:** EKS 클러스터 생성
-- **Step-03:** IAM OIDC Provider 및 퍼블릭 서브넷의 Managed Node Group 생성
-- **Step-04:** 노드 그룹 상태 확인
-
-### EKS 비용 메모 및 클러스터 삭제
-- **Step-01:** EKS 비용 구조 간단 정리 (컨트롤 플레인/노드)
-- **Step-02:** EKS 노드 그룹 삭제 절차
-
 ### Kubernetes Architecture
 - **Step-01:** Kubernetes 아키텍처 개요
 - **Step-02:** Kubernetes vs AWS EKS 아키텍처 비교
