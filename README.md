@@ -246,3 +246,144 @@ Service가 라벨로 Pod를 선택해서 고정 주소 제공
 ## 대상 학습자
 - AWS EKS로 Kubernetes를 처음 접하는 입문자
 - EKS 기반 운영을 준비하는 AWS 아키텍트/시스템 관리자/개발자
+
+
+## 실습을 위한 git 설치
+```
+sudo apt update
+sudo apt install -y git
+git --version
+```
+---
+```
+ubuntu@cp1:~$ sudo apt update
+sudo apt install -y git
+git --version
+[sudo] password for ubuntu:
+Hit:1 http://kr.archive.ubuntu.com/ubuntu jammy InRelease
+Get:2 http://kr.archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
+Get:3 http://kr.archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]
+Get:4 http://kr.archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [3165 kB]
+Get:5 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
+Fetched 3549 kB in 2s (1894 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+49 packages can be upgraded. Run 'apt list --upgradable' to see them.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  git-man less liberror-perl patch
+Suggested packages:
+  git-daemon-run | git-daemon-sysvinit git-doc git-email git-gui gitk gitweb git-cvs git-mediawiki git-svn ed diffutils-doc
+The following NEW packages will be installed:
+  git git-man less liberror-perl patch
+0 upgraded, 5 newly installed, 0 to remove and 49 not upgraded.
+Need to get 4398 kB of archives.
+After this operation, 21.6 MB of additional disk space will be used.
+Get:1 http://kr.archive.ubuntu.com/ubuntu jammy-updates/main amd64 less amd64 590-1ubuntu0.22.04.3 [142 kB]
+Get:2 http://kr.archive.ubuntu.com/ubuntu jammy/main amd64 liberror-perl all 0.17029-1 [26.5 kB]
+Get:3 http://kr.archive.ubuntu.com/ubuntu jammy-updates/main amd64 git-man all 1:2.34.1-1ubuntu1.15 [955 kB]
+Get:4 http://kr.archive.ubuntu.com/ubuntu jammy-updates/main amd64 git amd64 1:2.34.1-1ubuntu1.15 [3166 kB]
+Get:5 http://kr.archive.ubuntu.com/ubuntu jammy/main amd64 patch amd64 2.7.6-7build2 [109 kB]
+Fetched 4398 kB in 0s (18.8 MB/s)
+debconf: delaying package configuration, since apt-utils is not installed
+Selecting previously unselected package less.
+(Reading database ... 66943 files and directories currently installed.)
+Preparing to unpack .../less_590-1ubuntu0.22.04.3_amd64.deb ...
+Unpacking less (590-1ubuntu0.22.04.3) ...
+Selecting previously unselected package liberror-perl.
+Preparing to unpack .../liberror-perl_0.17029-1_all.deb ...
+Unpacking liberror-perl (0.17029-1) ...
+Selecting previously unselected package git-man.
+Preparing to unpack .../git-man_1%3a2.34.1-1ubuntu1.15_all.deb ...
+Unpacking git-man (1:2.34.1-1ubuntu1.15) ...
+Selecting previously unselected package git.
+Preparing to unpack .../git_1%3a2.34.1-1ubuntu1.15_amd64.deb ...
+Unpacking git (1:2.34.1-1ubuntu1.15) ...
+Selecting previously unselected package patch.
+Preparing to unpack .../patch_2.7.6-7build2_amd64.deb ...
+Unpacking patch (2.7.6-7build2) ...
+Setting up less (590-1ubuntu0.22.04.3) ...
+Setting up liberror-perl (0.17029-1) ...
+Setting up patch (2.7.6-7build2) ...
+Setting up git-man (1:2.34.1-1ubuntu1.15) ...
+Setting up git (1:2.34.1-1ubuntu1.15) ...
+debconf: unable to initialize frontend: Dialog
+debconf: (No usable dialog-like program is installed, so the dialog based frontend cannot be used. at /usr/share/perl5/Debconf/FrontEnd/Dialog.pm line 78.)
+debconf: falling back to frontend: Readline
+Scanning processes...
+Scanning candidates...
+Scanning linux images...
+
+Running kernel seems to be up-to-date.
+
+Restarting services...
+Daemons using outdated libraries
+--------------------------------
+
+  1. networkd-dispatcher.service  2. packagekit.service  3. polkit.service  4. systemd-resolved.service  5. unattended-upgrades.service  6. none of the above
+
+(Enter the items or ranges you want to select, separated by spaces.)
+
+Which services should be restarted?
+```
+### 위에서 6 , 엔터
+```
+Service restarts being deferred:
+ systemctl restart networkd-dispatcher.service
+ systemctl restart packagekit.service
+ systemctl restart polkit.service
+ systemctl restart systemd-resolved.service
+ systemctl restart unattended-upgrades.service
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+git version 2.34.1
+```
+---
+```
+ubuntu@cp1:~$ git clone https://github.com/edumgt/kubernetes-fundamentals-edumgt.git
+Cloning into 'kubernetes-fundamentals-edumgt'...
+remote: Enumerating objects: 639, done.
+remote: Counting objects: 100% (639/639), done.
+remote: Compressing objects: 100% (292/292), done.
+remote: Total 639 (delta 264), reused 548 (delta 214), pack-reused 0 (from 0)
+Receiving objects: 100% (639/639), 15.59 MiB | 13.52 MiB/s, done.
+Resolving deltas: 100% (264/264), done.
+```
+---
+```
+ubuntu@cp1:~/kubernetes-fundamentals-edumgt$ ls -al
+total 76
+drwxrwxr-x 15 ubuntu ubuntu 4096 Jan 24 07:26 .
+drwxr-x---  7 ubuntu ubuntu 4096 Jan 24 07:26 ..
+-rw-rw-r--  1 ubuntu ubuntu 6148 Jan 24 07:26 .DS_Store
+drwxrwxr-x  8 ubuntu ubuntu 4096 Jan 24 07:26 .git
+drwxrwxr-x  5 ubuntu ubuntu 4096 Jan 24 07:26 00-Docker-Images
+drwxrwxr-x  2 ubuntu ubuntu 4096 Jan 24 07:26 01-Kubernetes-Architecture
+drwxrwxr-x  2 ubuntu ubuntu 4096 Jan 24 07:26 02-PODs-with-kubectl
+drwxrwxr-x  2 ubuntu ubuntu 4096 Jan 24 07:26 03-ReplicaSets-with-kubectl
+drwxrwxr-x  6 ubuntu ubuntu 4096 Jan 24 07:26 04-Deployments-with-kubectl
+drwxrwxr-x  2 ubuntu ubuntu 4096 Jan 24 07:26 05-Services-with-kubectl
+drwxrwxr-x  2 ubuntu ubuntu 4096 Jan 24 07:26 06-YAML-Basics
+drwxrwxr-x  3 ubuntu ubuntu 4096 Jan 24 07:26 07-PODs-with-YAML
+drwxrwxr-x  3 ubuntu ubuntu 4096 Jan 24 07:26 08-ReplicaSets-with-YAML
+drwxrwxr-x  3 ubuntu ubuntu 4096 Jan 24 07:26 09-Deployments-with-YAML
+drwxrwxr-x  3 ubuntu ubuntu 4096 Jan 24 07:26 10-Services-with-YAML
+-rw-rw-r--  1 ubuntu ubuntu 7855 Jan 24 07:26 README.md
+drwxrwxr-x  2 ubuntu ubuntu 4096 Jan 24 07:26 presentation
+ubuntu@cp1:~/kubernetes-fundamentals-edumgt$ pwd
+/home/ubuntu/kubernetes-fundamentals-edumgt
+ubuntu@cp1:~/kubernetes-fundamentals-edumgt$
+```
+### git 설정
+```
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+git config --global --list
+```

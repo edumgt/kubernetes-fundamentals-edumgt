@@ -123,6 +123,20 @@ LB를 통해 API Server 엔드포인트 제공
 ```
 kubectl create -f replicaset-demo.yml
 ```
+---
+### 실행경로 확인
+```
+ubuntu@cp1:~/kubernetes-fundamentals-edumgt$ cd 03*
+ubuntu@cp1:~/kubernetes-fundamentals-edumgt/03-ReplicaSets-with-kubectl$ ls -al
+total 20
+drwxrwxr-x  2 ubuntu ubuntu 4096 Jan 24 07:26 .
+drwxrwxr-x 15 ubuntu ubuntu 4096 Jan 24 07:26 ..
+-rw-rw-r--  1 ubuntu ubuntu 7526 Jan 24 07:26 README.md
+-rw-rw-r--  1 ubuntu ubuntu  357 Jan 24 07:26 replicaset-demo.yml
+ubuntu@cp1:~/kubernetes-fundamentals-edumgt/03-ReplicaSets-with-kubectl$
+```
+---
+
 - **replicaset-demo.yml** 예시
 ```yml
 apiVersion: apps/v1
@@ -151,11 +165,56 @@ spec:
 kubectl get replicaset
 kubectl get rs
 ```
+---
+```
+ubuntu@cp1:~/kubernetes-fundamentals-edumgt/03-ReplicaSets-with-kubectl$ kubectl create -f replicaset-demo.yml
+replicaset.apps/my-helloworld-rs created
+ubuntu@cp1:~/kubernetes-fundamentals-edumgt/03-ReplicaSets-with-kubectl$ kubectl get replicaset
+NAME               DESIRED   CURRENT   READY   AGE
+my-helloworld-rs   6         6         4       3h18m
+nginx-66686b6766   3         3         3       21d
+whoami-b85fc56b4   1         1         1       21d
+```
 
 ### ReplicaSet 상세 확인
 ```
 kubectl describe rs/<replicaset-name>
-
+```
+---
+```
+ubuntu@cp1:~$ kubectl get replicaset
+NAME               DESIRED   CURRENT   READY   AGE
+nginx-66686b6766   3         3         3       21d
+whoami-b85fc56b4   1         1         1       21d
+ubuntu@cp1:~$ kubectl describe rs/nginx-66686b6766
+Name:           nginx-66686b6766
+Namespace:      default
+Selector:       app=nginx,pod-template-hash=66686b6766
+Labels:         app=nginx
+                pod-template-hash=66686b6766
+Annotations:    deployment.kubernetes.io/desired-replicas: 3
+                deployment.kubernetes.io/max-replicas: 4
+                deployment.kubernetes.io/revision: 1
+Controlled By:  Deployment/nginx
+Replicas:       3 current / 3 desired
+Pods Status:    3 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app=nginx
+           pod-template-hash=66686b6766
+  Containers:
+   nginx:
+    Image:         nginx
+    Port:          <none>
+    Host Port:     <none>
+    Environment:   <none>
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Events:            <none>
+```
+---
+```
 kubectl describe rs/my-helloworld-rs
 [or]
 kubectl describe rs my-helloworld-rs
