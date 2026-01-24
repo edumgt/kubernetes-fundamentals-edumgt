@@ -22,11 +22,80 @@ kubectl get nodes -o wide
 ### Pod 생성
 - Pod를 생성합니다.
 ```
-# 템플릿
 kubectl run <desired-pod-name> --image <Container-Image> --generator=run-pod/v1
+```
+```
+kubectl run my-first-pod --image stacksimplify/kubenginx:1.0.0 --generator=run-pod/v1
+
+ubuntu@cp1:~$ kubectl run my-first-pod --image stacksimplify/kubenginx:1.0.0 --generator=run-pod/v1
+error: unknown flag: --generator
+See 'kubectl run --help' for usage.
+```
+
+```
+ubuntu@cp1:~$ kubectl run my-first-pod --image stacksimplify/kubenginx:1.0.0
+pod/my-first-pod created
+ubuntu@cp1:~$ sudo crictl images
+[sudo] password for ubuntu:
+IMAGE                                              TAG                     IMAGE ID            SIZE
+docker.io/fortio/fortio                            latest                  17fdedc584a29       7.44MB
+docker.io/kubernetesui/dashboard-api               1.14.0                  a0607af4fcd8a       16.5MB
+docker.io/kubernetesui/dashboard-auth              1.4.0                   dd54374d0ab14       14.5MB
+docker.io/kubernetesui/dashboard-metrics-scraper   1.2.2                   d9cbc9f4053ca       13MB
+docker.io/kubernetesui/dashboard-web               1.7.0                   59f642f485d26       62.5MB
+docker.io/library/kong                             3.9                     3a975970da2f5       120MB
+docker.io/library/nginx                            1.27-alpine             6769dc3a703c7       21MB
+docker.io/library/nginx                            latest                  2e97da2b9cb35       62.9MB
+docker.io/library/nginx                            <none>                  058f4935d1cbc       59.8MB
+docker.io/rancher/klipper-helm                     v0.9.12-build20251215   2d868e2f7bff1       65.5MB
+docker.io/rancher/klipper-lb                       v0.4.13                 f7415d0003cb6       5.02MB
+docker.io/rancher/local-path-provisioner           v0.0.32                 cb584e17a5f4b       21.1MB
+docker.io/rancher/mirrored-coredns-coredns         1.13.1                  aa5e3ebc0dfed       23.6MB
+docker.io/rancher/mirrored-library-traefik         3.5.1                   8df847a19b384       49.7MB
+docker.io/rancher/mirrored-metrics-server          v0.8.0                  b9e1e3849e070       22.5MB
+docker.io/rancher/mirrored-pause                   3.6                     6270bb605e12e       301kB
+docker.io/traefik/whoami                           latest                  6fee7566e4273       3.04MB
+```
+### 위의 목록에 안보임
+### 1) Pod가 cp1이 아니라 “다른 노드”에 스케줄링됨 (가장 흔함)
+```
+kubectl run은 “클러스터에 Pod 만들어줘”일 뿐이고, 스케줄러가 실행 노드를 결정합니다.
+Pod가 worker 노드에 배치되면, 이미지는 그 worker 노드에서 pull되므로 cp1에서 crictl images를 쳐도 안 보입니다.
+```
+```
+ubuntu@cp1:~$ kubectl get pod my-first-pod -o wide
+NAME           READY   STATUS    RESTARTS   AGE    IP          NODE   NOMINATED NODE   READINESS GATES
+my-first-pod   1/1     Running   0          3m1s   10.42.2.9   w2     <none>           <none>
+```
+```
+2) 아직 이미지 pull이 안 됐거나, pull 실패 중
+
+Pod가 ContainerCreating, ImagePullBackOff, ErrImagePull 같은 상태면 이미지가 아직 로컬에 없어서 crictl images에 안 나옵니다.
+
+확인:
+
+kubectl get pod my-first-pod
+kubectl describe pod my-first-pod
+
+
+Events: 아래에 Pulling image, Failed to pull image, Back-off pulling image 같은 메시지가 나옵니다.
+
+빠른 진단 루틴(복붙)
+kubectl get pod my-first-pod -o wide
+kubectl describe pod my-first-pod | sed -n '/Events/,$p'
+```
+### (A) NODE가 cp1이 아닌 경우 → 그 NODE로 접속해서: - w1 , w2 순서나 배포는 k8s 가 임의 선정
+```
+sudo crictl images | grep -i kubenginx
+
+ubuntu@w2:~$ sudo crictl images | grep -i kubenginx
+[sudo] password for ubuntu:
+docker.io/stacksimplify/kubenginx       1.0.0               6e2661f396419       51MB
+```
+
 
 # 예시: Pod 이름과 컨테이너 이미지 지정
-kubectl run my-first-pod --image stacksimplify/kubenginx:1.0.0 --generator=run-pod/v1
+
 ```
 - **중요:** `--generator=run-pod/v1` 옵션 없이 실행하면 Deployment가 생성될 수 있습니다.
 - **중요:**
@@ -35,13 +104,16 @@ kubectl run my-first-pod --image stacksimplify/kubenginx:1.0.0 --generator=run-p
 ```
 kubectl run my-first-pod --image stacksimplify/kubenginx:1.0.0
 ```
+---
+---
 
-## kubectl run에서 `--generator=run-pod/v1` 없이 실행하면 Deployment가 생성될 수 있다는 의미
+
+### kubectl run에서 `--generator=run-pod/v1` 없이 실행하면 Deployment가 생성될 수 있다는 의미
 
 이 문장은 **Kubernetes/kubectl 버전 및 기본 동작 변화** 때문에, `kubectl run` 명령이 **Pod를 만들 수도 있고 Deployment를 만들 수도 있었던 역사적 이유**를 설명합니다.
 
 ---
-
+---
 ## 1) `kubectl run`은 Pod도 만들고 Deployment도 만들었던 시기가 있었다
 
 과거에는 같은 명령이라도 kubectl 버전/기본 generator 정책에 따라 결과가 달라질 수 있었습니다.
