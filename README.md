@@ -1,5 +1,5 @@
 # Kubernetes Fundamentals
-
+ 
 ### 분류
 ---
 Kubernetes에서 Node / Namespace(NS) / Service / Pod를 “무엇이고, 왜 필요한지, 서로 어떻게 연결되는지” 중심으로 정리한 것입니다.
