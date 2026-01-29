@@ -1,0 +1,28 @@
+flowchart TD
+  A["증상 발생\nkubectl TLS handshake timeout\nPod NotReady / 노드 불안정"] --> B["기본 점검\nuptime / free -h / top -o %CPU"]
+  B --> C{"리소스 폭주?\nload 매우 높음 + Mem available 매우 낮음\nsy/si 높음"}
+  C -- "아니오" --> Z["일반 k3s 장애 절차로 이동\njournalctl -u k3s 확인"]
+  C -- "예" --> D["디스크/인오드 배제\ndf -h / df -i\ndu -sh /var/lib/rancher/k3s/*"]
+
+  D --> E["softirq 원인 분류\nhead -n 5 /proc/softirqs\ngrep TIMER|NET_RX|RCU /proc/softirqs"]
+  E --> F{"NET_RX 폭주?"}
+  F -- "예" --> F1["네트워크 폭주 차단(임시)\nip -s link 로 폭주 IF 확인\nip link set enp0s8 down 등"]
+  F -- "아니오" --> G{"TIMER/RCU 폭주 + kswapd0 상위?\n메모리 압박/스왑/커널 housekeeping"}
+
+  G -- "예" --> H["즉시 부하원 제거(핵심)\nreplicas 과다/부하 Pod 제거 또는 스케일 다운\nkubectl 가능하면: scale / delete"]
+  H --> H1["특정 노드 NotReady Pod 정리(예)\nkubectl get pods -A -o wide --field-selector spec.nodeName=NODE\nawk/xargs로 my-helloworld-rs 삭제"]
+  H1 --> I{"kubectl 불가?\nAPI 타임아웃 발생?"}
+
+  I -- "예" --> J["클러스터 서비스 정지로 확산 차단\nsystemctl stop k3s"]
+  J --> K["잔재 정리: CNI netns 누적 제거\nls /var/run/netns | wc -l\nip netns delete cni-* (일괄)"]
+  K --> L["네트워크 잔재 확인\nip -br link | grep -c '^veth'\norphan veth는 type veth로 down/delete"]
+  L --> M["메모리 회복 응급 조치(선택)\njournalctl --vacuum-size/time\nsync; echo 3 > /proc/sys/vm/drop_caches\nswapoff -a; swapon -a"]
+  M --> N{"회복됨?\ntop: sy/si 감소, load 감소\nfree: available 증가"}
+  N -- "아니오" --> O["최단 복구: 재부팅\nreboot"]
+  N -- "예" --> P["서비스 재기동\nsystemctl start k3s"]
+
+  I -- "아니오" --> P
+
+  P --> Q["정상화 확인\nkubectl get nodes -o wide\nkubectl get pods -A | head\nsystemctl status k3s"]
+  Q --> R["재발 방지 조치\nreplicas 합리화(HPA/limit)\n부하테스트는 worker에서만\n불필요 서비스(tomcat/java) 중지\n실습 후 ns/job 정리"]
+  R --> S["추가 점검(선택)\n/var/run/netns 재증가 여부\nveth 개수 재폭증 여부"]
