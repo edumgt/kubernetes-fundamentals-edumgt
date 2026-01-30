@@ -1,17 +1,3 @@
-# Simple Key value Pairs
-person: # Dictionary
-  name: kalyan
-  age: 23
-  city: Hyderabd
-  hobbies: # List
-    - cooking
-    - cycling
-  friends: # Multiple lists
-    - name: friend1
-      age: 23
-    - name: friend2
-      age: 22
---- # YAML Document Separator
 apiVersion: v1 # String
 kind: Pod  # String
 metadata: # Dictionary
